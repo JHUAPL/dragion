@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Unipolar ions: uniform source and loss &#8212; dragion  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Physics validation" href="relaxation_sphere.html" />
+    <link rel="prev" title="Physics validation" href="../physvalid.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="unipolar-ions-uniform-source-and-loss">
+<h1>Unipolar ions: uniform source and loss<a class="headerlink" href="#unipolar-ions-uniform-source-and-loss" title="Permalink to this headline">¶</a></h1>
+<section id="problem-statement">
+<h2>Problem Statement<a class="headerlink" href="#problem-statement" title="Permalink to this headline">¶</a></h2>
+<p>The bipolar balance equation (in the absence of aerosol particles) is</p>
+<div class="math notranslate nohighlight">
+\begin{eqnarray}
+        \frac{\mathrm{d}n_+}{\mathrm{d}t} = q - \alpha n_+ n_- \\
+        \frac{\mathrm{d}n_-}{\mathrm{d}t} = q - \alpha n_+ n_-
+\end{eqnarray}</div><p>where <span class="math notranslate nohighlight">\(n_\pm\)</span> are respective ion concentrations and <span class="math notranslate nohighlight">\(\alpha\sim10^{-12} \: \mathrm{m}^3 \: \mathrm{s}^{-1}\)</span> [Harrison and Tammet]. Sans aerosols, <span class="math notranslate nohighlight">\(n_+=n_-\)</span>, so that a single species reads</p>
+<div class="math notranslate nohighlight">
+\begin{eqnarray}
+        \frac{\mathrm{d}n}{\mathrm{d}t} = q - \alpha n^2
+\end{eqnarray}</div><p><strong>dragion</strong> can be tested against this unipolar balance equation with a uniform <code class="docutils literal notranslate"><span class="pre">VolumeSource</span></code> and <code class="docutils literal notranslate"><span class="pre">CollisionalSinkUnipolar</span></code>; the implementation is in <code class="docutils literal notranslate"><span class="pre">dragion/simulations/unipolar/sourcesinktest/SourceSinkTest.java</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">VolumeSource</span></code> uniformly distributes particles across the simulation <code class="docutils literal notranslate"><span class="pre">Box</span></code> at a steady rate, representing the constant source term <span class="math notranslate nohighlight">\(q\)</span>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">CollisionalSinkUnipolar</span></code> algorithm simulates the loss term <span class="math notranslate nohighlight">\(- \alpha n^2\)</span> by overlaying a uniform grid on the simulation domain, and at each timestep
+(1) computing <span class="math notranslate nohighlight">\(n^2\)</span> in each grid cell
+(2) removing <span class="math notranslate nohighlight">\(\alpha \: n^2 \: \mathrm{d}t \: \mathrm{d}^3r \: / np2c\)</span> macroparticles from each grid cell (leaving zero if exceeding existing number)</p>
+<p>We would expect the simulated <span class="math notranslate nohighlight">\(\frac{\mathrm{d}n}{\mathrm{d}t}\)</span> to equal <span class="math notranslate nohighlight">\(0\)</span>, integrated over many timesteps; in other words, the simulated concentration should be constant.</p>
+</section>
+<section id="numerical-validation">
+<h2>Numerical Validation<a class="headerlink" href="#numerical-validation" title="Permalink to this headline">¶</a></h2>
+<p>Taking <span class="math notranslate nohighlight">\(q = 4\times10^6 \mathrm{m}^{-3} \mathrm{s}^{-1}\)</span> and <span class="math notranslate nohighlight">\(\frac{\mathrm{d}n_+}{\mathrm{d}t}=0\)</span> yields a steady-state unipolar concentration of <span class="math notranslate nohighlight">\(n_{equil}=\sqrt{\frac{q}{\alpha}}=2\times10^9 \: \mathrm{m}^{-3}\)</span> [Lorenz, MMRTG].</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SourceSinkTest</span></code> starts with an empty 5 m simulation box. As time progresses the <code class="docutils literal notranslate"><span class="pre">VolumeSource</span></code> fills the domain with macroparticles, until the “real” concentration reaches <span class="math notranslate nohighlight">\(n_{equil}\)</span>.</p>
+<p>Crucial simulation parameters are the macroparticle “size”, controlled by <span class="math notranslate nohighlight">\(np2c\)</span> and the grid spacing used for particle-particle collisions. For this numerical experiment the collision grid cell-size is the domain length divided by 64.
+At <span class="math notranslate nohighlight">\(np2c=10^7\)</span> the mean concentration peaks rapidly but then unphysically falls off: the number of macroparticles per grid-cell is far too low, with cell size / particle size ratio :math:=`(5 mathrm{m}/64)^3/(n_{equil}/np2c) = 0.1`. Reducing <span class="math notranslate nohighlight">\(np2c\)</span> by two orders of 10 increases the # particles per grid cell to <span class="math notranslate nohighlight">\(~10\)</span>, and the expected steady-state concentration is maintained.</p>
+<img alt="../_images/coll-equil.png" src="../_images/coll-equil.png" />
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">dragion</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getstarted.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../physvalid.html">Physics validation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Unipolar ions: uniform source and loss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relaxation_sphere.html">Physics validation</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../physvalid.html">Physics validation</a><ul>
+      <li>Previous: <a href="../physvalid.html" title="previous chapter">Physics validation</a></li>
+      <li>Next: <a href="relaxation_sphere.html" title="next chapter">Physics validation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, zimmemi1.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/examples/unipolar_source_loss.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

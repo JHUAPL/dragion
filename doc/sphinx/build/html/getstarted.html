@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Getting started &#8212; dragion  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Physics validation" href="physvalid.html" />
+    <link rel="prev" title="dragion" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<section id="vtk">
+<h3>VTK<a class="headerlink" href="#vtk" title="Permalink to this headline">¶</a></h3>
+<p>You will need to compile [VTK 8.2](vtk.org/download) from source, with Java bindings enabled. Typically on MacOS or Linux, using [CMake](<a class="reference external" href="https://cmake.org/">https://cmake.org/</a>), this looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>wget https://www.vtk.org/files/release/8.2/VTK-8.2.0.tar.gz
+tar xf VTK-8.2.0.tar.gz
+cd VTK-8.2.0
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=$VTK_HOME -DVTK_WRAP_JAVA=TRUE ..
+make install
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">$VTK_HOME</span></code> must be defined prior to invocation of cmake. The VTK Java bindings jar-file <code class="docutils literal notranslate"><span class="pre">vtk.jar</span></code> and a multitude of dynamically linked sub-libraries are installed into <code class="docutils literal notranslate"><span class="pre">$VTK_HOME/lib</span></code>.</p>
+</section>
+<section id="mowgli">
+<h3>mowgli<a class="headerlink" href="#mowgli" title="Permalink to this headline">¶</a></h3>
+<p>Implementation of surfaces, distribution samplers, and other low-level building blocks are currently part of the <strong>mowgli</strong> library. Clone it from &lt;<a class="reference external" href="http://hardin.jhuapl.edu:8080/scm/zimmemi1/mowgli">http://hardin.jhuapl.edu:8080/scm/zimmemi1/mowgli</a>&gt;. Further documentation can be found <em>here</em>.</p>
+</section>
+<section id="lestat">
+<h3>lestat<a class="headerlink" href="#lestat" title="Permalink to this headline">¶</a></h3>
+<p>TODO: copy from lestat getting-started docs</p>
+</section>
+</section>
+<section id="installation-and-test-run">
+<h2>Installation and test run<a class="headerlink" href="#installation-and-test-run" title="Permalink to this headline">¶</a></h2>
+<p>Get the code from &lt;<a class="reference external" href="http://hardin.jhuapl.edu:8080/scm/zimmemi1/dragion">http://hardin.jhuapl.edu:8080/scm/zimmemi1/dragion</a>&gt;. Assume that it is cloned into <cite>~/dragion</cite>.</p>
+<p>For now the classpath and runtime library path are passed explicitly to the JRE from the command line (this will probably chang&gt;</p>
+<p>To print a helpful message, try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DYLD_LIBRARY_PATH</span><span class="o">=~/</span><span class="n">local</span><span class="o">/</span><span class="n">vtk</span><span class="o">-</span><span class="mf">8.2</span><span class="o">/</span><span class="n">lib</span> \
+<span class="n">java</span> <span class="o">-</span><span class="n">Djava</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">path</span><span class="o">=/</span><span class="n">Users</span><span class="o">/</span><span class="n">zimmemi1</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">vtk</span><span class="o">-</span><span class="mf">8.2</span><span class="o">/</span><span class="n">lib</span> \
+<span class="o">-</span><span class="n">classpath</span> <span class="o">~/</span><span class="n">dragion</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="o">~/</span><span class="n">dragion</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">commons</span><span class="o">-</span><span class="n">math3</span><span class="o">-</span><span class="mf">3.6.1</span><span class="o">/</span><span class="n">commons</span><span class="o">-</span><span class="n">math3</span><span class="o">-</span><span class="mf">3.6.1</span><span class="o">.</span><span class="n">jar</span><span class="p">:</span><span class="o">~/</span><span class="n">dragion</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">guava</span><span class="o">-</span><span class="mf">28.1</span><span class="o">/</span><span class="n">guava</span><span class="o">-</span><span class="mf">28.1</span><span class="o">-&gt;</span>
+<span class="n">dragion</span><span class="o">.</span><span class="n">Main</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">dragion</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-and-test-run">Installation and test run</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="physvalid.html">Physics validation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">dragion</a></li>
+      <li>Next: <a href="physvalid.html" title="next chapter">Physics validation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, zimmemi1.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/getstarted.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

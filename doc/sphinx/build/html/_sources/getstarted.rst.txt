@@ -1,0 +1,45 @@
+Getting started
+===============
+
+Dependencies
+------------
+
+VTK
+^^^^^^^
+
+You will need to compile [VTK 8.2](vtk.org/download) from source, with Java bindings enabled. Typically on MacOS or Linux, using [CMake](https://cmake.org/), this looks like::
+
+	wget https://www.vtk.org/files/release/8.2/VTK-8.2.0.tar.gz
+	tar xf VTK-8.2.0.tar.gz
+	cd VTK-8.2.0
+	mkdir build
+	cd build
+	cmake -DCMAKE_INSTALL_PREFIX=$VTK_HOME -DVTK_WRAP_JAVA=TRUE ..
+	make install
+
+Note that ``$VTK_HOME`` must be defined prior to invocation of cmake. The VTK Java bindings jar-file ``vtk.jar`` and a multitude of dynamically linked sub-libraries are installed into ``$VTK_HOME/lib``.
+
+mowgli
+^^^^^^
+
+Implementation of surfaces, distribution samplers, and other low-level building blocks are currently part of the **mowgli** library. Clone it from <http://hardin.jhuapl.edu:8080/scm/zimmemi1/mowgli>. Further documentation can be found *here*.
+
+lestat
+^^^^^^
+
+TODO: copy from lestat getting-started docs
+
+Installation and test run
+-------------------------
+
+Get the code from <http://hardin.jhuapl.edu:8080/scm/zimmemi1/dragion>. Assume that it is cloned into `~/dragion`.
+
+For now the classpath and runtime library path are passed explicitly to the JRE from the command line (this will probably chang>
+
+To print a helpful message, try::
+
+        DYLD_LIBRARY_PATH=~/local/vtk-8.2/lib \
+        java -Djava.library.path=/Users/zimmemi1/local/vtk-8.2/lib \
+        -classpath ~/dragion/bin:~/dragion/lib/commons-math3-3.6.1/commons-math3-3.6.1.jar:~/dragion/lib/guava-28.1/guava-28.1->
+        dragion.Main
+

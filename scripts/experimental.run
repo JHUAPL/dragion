@@ -1,0 +1,53 @@
+ENTRYPOINT=dragion.simulations.experimental.DragionExperimental
+ARGS=`cat args` 	#"-tomlfile input.toml -restart 0 -nsteps 3000 -dmpstride 1000 -gcstride 25 -diagstride 25 -writegrid 32"
+
+DRAGION_HOME=$HOME/workspace/dragion
+LESTAT_HOME=$HOME/workspace/lestat
+MOWGLI_HOME=$HOME/workspace/mowgli
+
+if [[ `uname` == Darwin ]]; then
+	VTK_LIB=$HOME/local/vtk-8.2/lib
+elif [[ `uname` == Linux ]]; then
+	VTK_LIB=$HOME/local/vtk-8.2/lib64
+fi
+EMBREE_LIB=$HOME/local/embree-3.13.4.x86_64.macosx/lib
+LIBS_PATH=$VTK_LIB:$EMBREE_LIB
+
+CLASSPATH_ENTRIES=()
+CLASSPATH_ENTRIES+=($DRAGION_HOME/lib/commons-cli-1.5.0/commons-cli-1.5.0.jar)
+CLASSPATH_ENTRIES+=($DRAGION_HOME/lib/tomlj-1.0.0/tomlj-1.0.0.jar)
+CLASSPATH_ENTRIES+=($DRAGION_HOME/lib/antlr4-runtime-4.7.2/antlr4-runtime-4.7.2.jar)
+CLASSPATH_ENTRIES+=($DRAGION_HOME/lib/jfreechart-1.5.3/jfreechart-1.5.3.jar)
+CLASSPATH_ENTRIES+=($DRAGION_HOME/lib/commons-math3-3.6.1/commons-math3-3.6.1.jar)
+CLASSPATH_ENTRIES+=($DRAGION_HOME/lib/guava-28.1/guava-28.1-jre.jar)
+CLASSPATH_ENTRIES+=($DRAGION_HOME/lib/jna-5.4.0/jna-5.4.0.jar)
+CLASSPATH_ENTRIES+=($VTK_LIB/vtk.jar)
+CLASSPATH_ENTRIES+=($MOWGLI_HOME/embree/build)
+
+if [[ `uname` == Darwin ]]; then
+	# eclipse build
+	CLASSPATH_ENTRIES+=($DRAGION_HOME/bin)
+	CLASSPATH_ENTRIES+=($LESTAT_HOME/bin)
+	CLASSPATH_ENTRIES+=($MOWGLI_HOME/bin)
+elif [[ `uname` == Linux ]]; then
+	# ant build
+	CLASSPATH_ENTRIES+=($DRAGION_HOME/build)
+#	CLASSPATH_ENTRIES+=($JAVA_HOME/jre/lib/amd64)
+fi
+
+CLASSPATH=""
+for i in ${!CLASSPATH_ENTRIES[@]}; do
+	if [[ $i == 0 ]]; then
+		CLASSPATH=${CLASSPATH_ENTRIES[$i]}
+	else
+		CLASSPATH+=":${CLASSPATH_ENTRIES[$i]}"
+	fi
+done
+
+if [[ `uname` == Darwin ]]; then
+	JAVA=/Library/Java/JavaVirtualMachines/jdk-13.0.1.jdk/Contents/Home/bin/java
+	DYLD_LIBRARY_PATH=$LIBS_PATH $JAVA -Djava.library.path=$LIBS_PATH -classpath $CLASSPATH $ENTRYPOINT $ARGS
+elif [[ `uname` == Linux ]]; then
+	JAVA=java
+	LD_LIBRARY_PATH=$LIBS_PATH:$LD_LIBRARY_PATH $JAVA -Djava.library.path=$LIBS_PATH -classpath $CLASSPATH $ENTRYPOINT $ARGS
+fi

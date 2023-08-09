@@ -1,0 +1,1 @@
+-tomlfile input.toml -restart 0 -nsteps 3000 -dmpstride 1000 -gcstride 25 -diagstride 25 -writegrid 32

@@ -1,0 +1,6 @@
+rm -f *.diag
+rm -f *.vtr
+rm -f *.vtp
+rm -f log
+rm -f *.e*
+rm -f pid
